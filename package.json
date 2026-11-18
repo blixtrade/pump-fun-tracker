@@ -1,0 +1,13 @@
+{
+  "name": "pump-fun-tracker",
+  "version": "1.0.0",
+  "description": "Live pump.fun tracker for the terminal: every new Solana memecoin launch as it happens, with dev buy, market cap and filters.",
+  "type": "module",
+  "bin": { "pump-fun-tracker": "bin/pump-fun-tracker.js" },
+  "scripts": { "start": "node bin/pump-fun-tracker.js", "test": "node --test" },
+  "engines": { "node": ">=22" },
+  "keywords": ["pump-fun", "pumpfun", "pump-fun-tracker", "solana", "memecoin", "new-pairs", "token-launches", "pumpportal", "websocket", "sniper"],
+  "homepage": "https://blixvip.com/pump-fun-tracker",
+  "repository": { "type": "git", "url": "git+https://github.com/blixtrade/pump-fun-tracker.git" },
+  "license": "MIT"
+}
