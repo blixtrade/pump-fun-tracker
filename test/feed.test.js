@@ -2,14 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { makeFilter, parseLaunch, parseMigration } from "../lib/feed.js";
 
-const raw = { signature: "sig", mint: "MintpumP", traderPublicKey: "Dev", txType: "create", initialBuy: 1788384, solAmount: 0.05, marketCapSol: 28.05, name: " GTA 6 GATOR ", symbol: "GATOR", uri: "https://ipfs.io/x" };
+const raw = { signature: "sig", mint: "9hjBLBrc7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4f4pump", traderPublicKey: "BDZnRs7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4fN6Fs2", txType: "create", initialBuy: 1788384, solAmount: 0.05, marketCapSol: 28.05, name: " GTA 6 GATOR ", symbol: "GATOR", uri: "https://ipfs.io/x" };
 
 test("a create message becomes a launch", () => {
   const l = parseLaunch(raw);
   assert.equal(l.type, "launch");
   assert.equal(l.name, "GTA 6 GATOR");
   assert.equal(l.devBuySol, 0.05);
-  assert.equal(l.dev, "Dev");
+  assert.equal(l.dev, "BDZnRs7WZW2H8UQvBAvG5WiTZotXUv2Bdcn4fN6Fs2");
 });
 
 test("non-launch messages are ignored", () => {
@@ -19,7 +19,7 @@ test("non-launch messages are ignored", () => {
 });
 
 test("a migrate message becomes a migration", () => {
-  assert.equal(parseMigration({ txType: "migrate", mint: "M", pool: "pump-amm" }).type, "migration");
+  assert.equal(parseMigration({ txType: "migrate", mint: raw.mint, pool: "pump-amm" }).type, "migration");
   assert.equal(parseMigration(raw), null);
 });
 
@@ -31,4 +31,12 @@ test("filters combine", () => {
   assert.equal(makeFilter({ name: "gator" })(l), true);
   assert.equal(makeFilter({ name: "cat$" })(l), false);
   assert.equal(makeFilter({ name: "gta", exclude: "gator" })(l), false);
+});
+
+test("control characters are stripped from names and bad mints are dropped", () => {
+  const l = parseLaunch({ ...raw, name: "Evil\u001b]0;pwned\u0007\nCoin", symbol: "E\u001b[2JV" });
+  assert.equal(l.name, "Evil ]0;pwned Coin");
+  assert.equal(l.symbol, "E [2JV");
+  assert.equal(parseLaunch({ ...raw, mint: 'x" onmouseover="' }), null);
+  assert.equal(parseMigration({ txType: "migrate", mint: "<b>" }), null);
 });
