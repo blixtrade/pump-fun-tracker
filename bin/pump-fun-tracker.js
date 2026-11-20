@@ -23,6 +23,12 @@ Examples:
   pump-fun-tracker --json | jq .mint
 `;
 
+// `pump-fun-tracker --json | head -5`: when the reader goes away, stop quietly.
+process.stdout.on("error", (err) => {
+  if (err.code === "EPIPE") process.exit(0);
+  throw err;
+});
+
 main(async () => {
   const args = parseArgs(process.argv.slice(2), { booleans: ["migrations", "json", "help"] });
   if (args.help) { console.log(HELP); return; }
